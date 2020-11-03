@@ -41,7 +41,7 @@ chatClient.setUser(
 
 const ConsumidorScreen = ()=>{
 
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(true)
 
   const [channel, setChannel] = React.useState(undefined)
 
@@ -60,12 +60,21 @@ const ConsumidorScreen = ()=>{
     }
   },[])
 
+
+  React.useEffect(()=>{
+    console.log('agora tem atendentes')
+  },[membersAtendees])
+
   const getAtendees = async() =>{
 
     const members = await chatClient.queryUsers({atendee:true, stand: parsed_params['stand']})
+    console.log(members)
     const users_ids = members.users.map((user)=> user.id)
+    console.log(users_ids)
     setMembersAtendees(users_ids)
+    
   }
+
   const toggle = () => {
     setOpen(!open)
     const _channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['stand']), userConfig)
@@ -74,28 +83,26 @@ const ConsumidorScreen = ()=>{
 
   if(!membersAtendees.length) {
     return <React.Fragment />
-  }
-
+  }else {
+    const channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['stand']), userConfig)
   return (
-    <div className={`wrapper ${open ? 'wrapper--open' : ''}`}>
+    <div className={'wrapper--open'} style={{'display': 'flex'}}>
       <Chat client={chatClient} theme={'commerce dark'}>
         <Channel channel={channel} >
           <Window>
             <ChannelHeader title={parsed_params['stand']} />
-            {open && (
               <MessageList
-              
                 typingIndicator={TypingIndicator}
                 Message={MessageCommerce}
                />
-             )}
             <MessageInput  />
           </Window>
         </Channel>
       </Chat>
-      <Button onClick={toggle} open={open} />
+      {/* <Button onClick={toggle} open={open} /> */}
     </div>
   );
+}
 
 }
 export default ConsumidorScreen
