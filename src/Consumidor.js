@@ -32,8 +32,8 @@ const token = jwt.sign(payload, privateKey, { algorithm: 'HS256'});
 
 chatClient.setUser(
   {
-       id: payload['user_id'],
-       name: parsed_params['name'],
+    id: payload['user_id'],
+    name: parsed_params['name'],
   },
   token,
 );
@@ -48,7 +48,7 @@ const ConsumidorScreen = ()=>{
   const [membersAtendees, setMembersAtendees] = React.useState([])
   const userConfig = {
     image: parsed_params['logo'] || 'https://picsum.photos/seed/picsum/100/100',
-    name: parsed_params['stand'],
+    name: parsed_params['name'],
     stand: parsed_params['stand'],
     members:membersAtendees
   }
@@ -68,9 +68,7 @@ const ConsumidorScreen = ()=>{
   const getAtendees = async() =>{
 
     const members = await chatClient.queryUsers({atendee:true, stand: parsed_params['stand']})
-    console.log(members)
     const users_ids = members.users.map((user)=> user.id)
-    console.log(users_ids)
     setMembersAtendees(users_ids)
     
   }
@@ -86,7 +84,7 @@ const ConsumidorScreen = ()=>{
   }else {
     const channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['stand']), userConfig)
   return (
-    <div className={'wrapper--open'} style={{'display': 'flex'}}>
+    <div className={'wrapper wrapper--open'}>
       <Chat client={chatClient} theme={'commerce dark'}>
         <Channel channel={channel} >
           <Window>
