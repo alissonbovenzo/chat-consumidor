@@ -24,7 +24,7 @@ const parsed_params = {...object_params[0], ...object_params[1],  ...object_para
 
 
 const payload = {
-  user_id : ''.concat(parsed_params['stand']).concat('-').concat( parsed_params['name'].replaceAll(' ', '_'))
+  user_id : ''.concat(parsed_params['standid']).concat('-').concat( parsed_params['username'].replaceAll(' ', '_').replaceAll('.', '_'))
 }
 
 const privateKey = 'u6f66muw7geee8ptvsmkmw2axet6gzkze785hsxmdsr674t74qmgsqru73mfa2ju'
@@ -33,7 +33,7 @@ const token = jwt.sign(payload, privateKey, { algorithm: 'HS256'});
 chatClient.setUser(
   {
     id: payload['user_id'],
-    name: parsed_params['name'],
+    name: parsed_params['username'],
   },
   token,
 );
@@ -48,8 +48,8 @@ const ConsumidorScreen = ()=>{
   const [membersAtendees, setMembersAtendees] = React.useState([])
   const userConfig = {
     image: parsed_params['logo'] || 'https://picsum.photos/seed/picsum/100/100',
-    name: parsed_params['name'],
-    stand: parsed_params['stand'],
+    name: parsed_params['username'],
+    stand: parsed_params['standid'],
     members:membersAtendees
   }
 
@@ -62,12 +62,12 @@ const ConsumidorScreen = ()=>{
 
 
   React.useEffect(()=>{
-    console.log('agora tem atendentes')
+    console.info('atendees populated')
   },[membersAtendees])
 
   const getAtendees = async() =>{
 
-    const members = await chatClient.queryUsers({atendee:true, stand: parsed_params['stand']})
+    const members = await chatClient.queryUsers({atendee:true, stand: parsed_params['standid']})
     const users_ids = members.users.map((user)=> user.id)
     setMembersAtendees(users_ids)
     
@@ -75,20 +75,20 @@ const ConsumidorScreen = ()=>{
 
   const toggle = () => {
     setOpen(!open)
-    const _channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['stand']), userConfig)
+    const _channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['standid']), userConfig)
     setChannel(_channel)
   }
 
   if(!membersAtendees.length) {
     return <React.Fragment />
   }else {
-    const channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['stand']), userConfig)
+    const channel = chatClient.channel('messaging', ''.concat(payload['user_id']).concat(parsed_params['standid']), userConfig)
   return (
     <div className={'wrapper wrapper--open'}>
       <Chat client={chatClient} theme={'commerce dark'}>
         <Channel channel={channel} >
           <Window>
-            <ChannelHeader title={parsed_params['stand']} />
+            <ChannelHeader title={parsed_params['standname']} />
               <MessageList
                 typingIndicator={TypingIndicator}
                 Message={MessageCommerce}
